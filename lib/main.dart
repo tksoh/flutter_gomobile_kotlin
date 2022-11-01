@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,6 +49,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  static const platform = MethodChannel('example.com/gomobilelib');
   int _counter = 0;
 
   void _incrementCounter() {
@@ -58,6 +60,19 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+    });
+  }
+
+  Future<void> _getRandomNumber() async {
+    int randomNumber;
+    try {
+      randomNumber = await platform.invokeMethod('getRandomNumber');
+    } on PlatformException catch (_) {
+      randomNumber = 0;
+    }
+
+    setState(() {
+      _counter = randomNumber;
     });
   }
 
@@ -106,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _getRandomNumber, //_incrementCounter,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
