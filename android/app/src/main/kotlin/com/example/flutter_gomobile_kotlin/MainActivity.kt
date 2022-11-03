@@ -19,8 +19,17 @@ class MainActivity: FlutterActivity() {
             if(call.method == "getRandomNumber") {
                 val num = goMobileLib.randomNumber()
                 result.success(num)
+            } else if (call.method == "getIncrement") {
+                // Data type mapping hell: 
+                // Go's int type maps to Long in Java, while Dart
+                // pass int type into Kotlin as Int (why?). So
+                // we need to cast the int argument to Long before
+                // passing it to Go.
+                val dataInt: Int? = call.argument("data")
+                val dateLong: Long = dataInt!!.toLong()
+                val rv = goMobileLib.increment(dateLong)
+                result.success(rv)
             }
-
         }
     }
 }
